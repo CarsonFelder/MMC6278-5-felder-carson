@@ -26,9 +26,8 @@ router
   //   {...},
   //   {...}, etc
   // ]
-
-  .post('/inventory', async (req, res) => {
-
+  
+  post('/inventory', async (req, res) => {
     try {
       const {
         price,
@@ -36,17 +35,26 @@ router
         name,
         image,
         description,
-      } = req.body 
-      if (!(
-        price &&
-        quantity &&
-        image &&
-        description &&
-      ))
-      return res.status(204)
-    } 
+      } = req.body;
+  
+      if (!(price && 
+        quantity && 
+        name && 
+        image && 
+        description)) {
+        return res
+          .status(400)
+          .send('Must include price, quantity, name, image, description');
+      }
+  
+      res.sendStatus(204);
+    } catch (err) {
+      console.error('Error adding inventory item:', err);
+      res.status(500).json({ error: 'Internal Server Error', message: err.message });
+    }
+  });
 
-} )
+
 
 
 
