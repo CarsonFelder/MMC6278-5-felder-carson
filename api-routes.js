@@ -27,7 +27,7 @@ router
   //   {...}, etc
   // ]
   
-  post('/inventory', async (req, res) => {
+  .post('/inventory', async (req, res) => {
     try {
       const {
         price,
