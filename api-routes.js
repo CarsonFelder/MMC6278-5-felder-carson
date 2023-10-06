@@ -96,14 +96,30 @@ router
   // If no item is found, return a 404 status.
   // If an item is modified, return a 204 status code.
 
-// app.put('/inventory/:id', async (req, res) => {
-//   try {
-//     const {
-//       ......???????? Add in here
-//     }
-//   }
-// }
-// )
+app.put('/inventory/:id', async (req, res) => {
+  try {
+    const {
+          price,
+          quantity,
+          name,
+          image,
+          description,
+        } = req.body;
+    
+        if (!(price && quantity && name && image && description)) {
+          return res.status(404).send('Must include price, quantity, name, image, description')
+          
+        const [{affectedRows}] = await db.query(
+          `UPDATE inventory SET ? WHERE id=?`,
+        [{price, quantity, name, image, description}, req.params.id]
+        )
+        if (affectedRows === 0) return res.status(404).send(`item not found`)
+        res.status(204).send(`User Updated`)
+        } catch (err) {
+          console.log(err)
+        res.status(404).send('Error updating user: ' + err.message)
+        }
+    })
 
 
 
@@ -111,6 +127,24 @@ router
   // based on the id in the route parameter.
   // If no item is found, return a 404 status.
   // If an item is deleted, return a 204 status code.
+app.delete(`/inventory/:id`, async (req, res) => {
+  try {
+    const [{affectedRows}] = await db.query (
+      `DELETE FROM items WHERE id = ?`,
+      req.params.id
+    )
+      if (affectedRows === 0) return res.status(404).send(`Item not found`)
+    res.send(`Item deleted`)
+  }
+  catch(err) {
+    res.status(404).send(`Error deleting item: ` + err.message)
+  }
+})
+
+
+
+
+
 
 router
   .route('/cart')
