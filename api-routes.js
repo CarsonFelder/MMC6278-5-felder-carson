@@ -12,6 +12,7 @@ router
       res.status(500).send('Error retrieving inventory: ' + err.message)
     }
   }) 
+  
 
   // The response should look like:
   // [
@@ -27,7 +28,14 @@ router
   //   {...}, etc
   // ]
   
-  .post('/inventory', async (req, res) => {
+
+  // TODO: Create a POST route that inserts inventory items
+  // This route will accept price, quantity, name, image, and description as JSON
+  // in the request body.
+  // It should return a 204 status code
+
+
+  .post( async (req, res) => {
     try {
       const {
         price,
@@ -37,16 +45,10 @@ router
         description,
       } = req.body;
   
-      if (!(price && 
-        quantity && 
-        name && 
-        image && 
-        description)) {
-        return res
-          .status(400)
-          .send('Must include price, quantity, name, image, description');
+      if (!(price && quantity && name && image && description)) {
+        return res.status(400).send('Must include price, quantity, name, image, description');
       }
-  
+      await db.query (`insert into inventory (price, quantity, name, image, description) values (?,?,?,?,?)`, [price, quantity, name, image, description])
       res.sendStatus(204);
     } catch (err) {
       console.error('Error adding inventory item:', err);
@@ -58,10 +60,7 @@ router
 
 
 
-  // TODO: Create a POST route that inserts inventory items
-  // This route will accept price, quantity, name, image, and description as JSON
-  // in the request body.
-  // It should return a 204 status code
+
 
 router
   .route('/inventory/:id')
@@ -77,6 +76,18 @@ router
   //   "price": 599.99,
   //   "quantity": 3
   // }
+  .get (async(req, res)=> {
+    try {
+      const [[item]] = await db.query(`SELECT * FROM inventory where id=?`,req.params.id)
+      res.json(item)
+      } catch (err) {
+        res.status(500).send('Error retrieving inventory: ' + err.message)
+      }
+
+
+
+
+  })
 
   // TODO: Create a PUT route that updates the inventory table based on the id
   // in the route parameter.
@@ -84,6 +95,17 @@ router
   // in the request body.
   // If no item is found, return a 404 status.
   // If an item is modified, return a 204 status code.
+
+// app.put('/inventory/:id', async (req, res) => {
+//   try {
+//     const {
+//       ......???????? Add in here
+//     }
+//   }
+// }
+// )
+
+
 
   // TODO: Create a DELETE route that deletes an item from the inventory table
   // based on the id in the route parameter.
